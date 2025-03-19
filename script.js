@@ -1,73 +1,70 @@
-// Get a working Audius node
-async function getAudiusNode() {
-  try {
-    const response = await fetch('https://api.audius.co');
-    const data = await response.json();
-    return data.data[0];
-  } catch (error) {
-    console.error('Failed to fetch Audius node:', error);
-    return null;
-  }
-}
+const searchBtn = document.getElementById("searchBtn");
+const searchInput = document.getElementById("search");
+const resultsDiv = document.getElementById("results");
+const audioPlayer = document.getElementById("audio");
 
-// Search for music using the Audius API
-async function searchMusic(query) {
-  const node = await getAudiusNode();
-  if (!node) {
-    document.getElementById('results').innerHTML = '<p>Failed to connect to Audius. Please try again later.</p>';
+// Audius API URL
+const API_URL = "https://api.audius.co/v1/tracks/search?query=";
+
+// Search for Songs
+async function searchSongs() {
+  const query = searchInput.value.trim();
+  if (!query) {
+    alert("Please enter a song or artist name.");
     return;
   }
-
+  
   try {
-    const response = await fetch(`${node}/v1/tracks/search?query=${encodeURIComponent(query)}`);
+    resultsDiv.innerHTML = `<p>Loading songs...</p>`;
+    const response = await fetch(API_URL + encodeURIComponent(query) + "&app_name=Suno");
     const data = await response.json();
-    const resultsDiv = document.getElementById('results');
-    resultsDiv.innerHTML = '';
-
-    if (!data || !data.data || data.data.length === 0) {
-      resultsDiv.innerHTML = '<p>No songs found!</p>';
+    
+    if (data.data.length === 0) {
+      resultsDiv.innerHTML = `<p>No results found. Try another search.</p>`;
       return;
     }
-
-    data.data.forEach(song => {
-      const songCard = document.createElement('div');
-      songCard.classList.add('song');
-      songCard.innerHTML = `
-        <img src="${song.artwork['480x480'] || 'default-cover.jpg'}" alt="Cover">
-        <h3>${song.title}</h3>
-        <p>By ${song.user.name}</p>
-        <button onclick="playSong('${song.stream_url}')">Play</button>
-        <button onclick="addToLibrary('${song.id}', '${song.title}', '${song.user.name}', '${song.artwork['480x480'] || 'default-cover.jpg'}')">Add to Library</button>
-      `;
-      resultsDiv.appendChild(songCard);
-    });
+    
+    displaySongs(data.data);
   } catch (error) {
-    console.error('Error fetching music:', error);
-    document.getElementById('results').innerHTML = '<p>Failed to load music. Please try again.</p>';
+    resultsDiv.innerHTML = `<p>Failed to connect to Audius. Please try again later.</p>`;
+    console.error("Error fetching songs:", error);
   }
 }
 
-// Play song
+// Display Song Results
+function displaySongs(songs) {
+  resultsDiv.innerHTML = ""; // Clear previous results
+  
+  songs.forEach(song => {
+    const songCard = document.createElement("div");
+    songCard.classList.add("song");
+
+    const artworkUrl = song.artwork ? song.artwork['150x150'] : 'https://via.placeholder.com/150';
+    songCard.innerHTML = `
+      <img src="${artworkUrl}" alt="${song.title}" />
+      <h3>${song.title}</h3>
+      <p>Artist: ${song.user.name}</p>
+      <button onclick="playSong('${song.stream_url}')">Play</button>
+    `;
+
+    resultsDiv.appendChild(songCard);
+  });
+}
+
+// Play Song
 function playSong(url) {
-  const audioPlayer = document.getElementById('audio');
+  if (!url) {
+    alert("Song playback is not available.");
+    return;
+  }
   audioPlayer.src = url;
   audioPlayer.play();
 }
 
-// Add to library (stored in localStorage)
-function addToLibrary(id, title, artist, cover) {
-  const library = JSON.parse(localStorage.getItem('library')) || [];
-  library.push({ id, title, artist, cover });
-  localStorage.setItem('library', JSON.stringify(library));
-  alert(`${title} added to your library!`);
-}
-
-// Search button click event
-document.getElementById('searchBtn').onclick = () => {
-  const query = document.getElementById('search').value.trim();
-  if (query) {
-    searchMusic(query);
-  } else {
-    alert('Please enter a song or artist name.');
+// Event Listeners
+searchBtn.addEventListener("click", searchSongs);
+searchInput.addEventListener("keypress", (e) => {
+  if (e.key === "Enter") {
+    searchSongs();
   }
-};
+});
