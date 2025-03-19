@@ -1,70 +1,77 @@
-const searchBtn = document.getElementById("searchBtn");
-const searchInput = document.getElementById("search");
-const resultsDiv = document.getElementById("results");
-const audioPlayer = document.getElementById("audio");
+// YouTube API Configuration
+const API_KEY = 'AIzaSyD_64PJs5rFmAl_U1ON983bihNwMzy3nGc';
+const BASE_URL = 'https://www.googleapis.com/youtube/v3';
 
-// Audius API URL
-const API_URL = "https://corsproxy.io/?https://discoveryprovider.audius.co/v1/tracks/search?query=";
-
-// Search for Songs
-async function searchSongs() {
-  const query = searchInput.value.trim();
-  if (!query) {
-    alert("Please enter a song or artist name.");
-    return;
-  }
+// Search Music
+function searchMusic() {
+  const query = document.getElementById('search-query').value;
   
-  try {
-    resultsDiv.innerHTML = `<p>Loading songs...</p>`;
-    const response = await fetch(API_URL + encodeURIComponent(query) + "&app_name=Suno");
-    const data = await response.json();
-    
-    if (data.data.length === 0) {
-      resultsDiv.innerHTML = `<p>No results found. Try another search.</p>`;
-      return;
-    }
-    
-    displaySongs(data.data);
-  } catch (error) {
-    resultsDiv.innerHTML = `<p>Failed to connect to Audius. Please try again later.</p>`;
-    console.error("Error fetching songs:", error);
-  }
+  fetch(`${BASE_URL}/search?part=snippet&type=video&q=${encodeURIComponent(query)}&key=${API_KEY}`)
+    .then(response => response.json())
+    .then(data => displayResults(data.items))
+    .catch(() => alert('Failed to load music. Please try again.'));
 }
 
-// Display Song Results
-function displaySongs(songs) {
-  resultsDiv.innerHTML = ""; // Clear previous results
-  
-  songs.forEach(song => {
-    const songCard = document.createElement("div");
-    songCard.classList.add("song");
+function displayResults(videos) {
+  const resultsDiv = document.getElementById('results');
+  resultsDiv.innerHTML = '';
 
-    const artworkUrl = song.artwork ? song.artwork['150x150'] : 'https://via.placeholder.com/150';
-    songCard.innerHTML = `
-      <img src="${artworkUrl}" alt="${song.title}" />
-      <h3>${song.title}</h3>
-      <p>Artist: ${song.user.name}</p>
-      <button onclick="playSong('${song.stream_url}')">Play</button>
+  videos.forEach(video => {
+    const videoId = video.id.videoId;
+    const title = video.snippet.title;
+    const thumbnail = video.snippet.thumbnails.default.url;
+    const channel = video.snippet.channelTitle;
+
+    resultsDiv.innerHTML += `
+      <div class="song-card">
+        <img src="${thumbnail}" alt="${title}">
+        <div>
+          <h3>${title}</h3>
+          <p>${channel}</p>
+        </div>
+        <button onclick="playSong('${videoId}')">Play</button>
+        <button onclick="saveToLibrary('${videoId}', '${title}', '${thumbnail}', '${channel}')">Save</button>
+      </div>
     `;
-
-    resultsDiv.appendChild(songCard);
   });
 }
 
 // Play Song
-function playSong(url) {
-  if (!url) {
-    alert("Song playback is not available.");
-    return;
-  }
-  audioPlayer.src = url;
-  audioPlayer.play();
+function playSong(videoId) {
+  window.open(`https://www.youtube.com/watch?v=${videoId}`, '_blank');
 }
 
-// Event Listeners
-searchBtn.addEventListener("click", searchSongs);
-searchInput.addEventListener("keypress", (e) => {
-  if (e.key === "Enter") {
-    searchSongs();
-  }
-});
+// Save to Library
+function saveToLibrary(videoId, title, thumbnail, channel) {
+  const library = JSON.parse(localStorage.getItem('library')) || [];
+  library.push({ videoId, title, thumbnail, channel });
+  localStorage.setItem('library', JSON.stringify(library));
+  alert('Song added to library!');
+}
+
+// Profile Management
+function saveProfile() {
+  const username = document.getElementById('username').value;
+  const avatarFile = document.getElementById('avatar-upload').files[0];
+
+  if (!username) return alert('Please enter your username.');
+
+  const reader = new FileReader();
+  reader.onload = e => {
+    localStorage.setItem('username', username);
+    localStorage.setItem('avatar', e.target.result);
+    alert('Profile saved!');
+    window.location.href = 'index.html';
+  };
+  
+  if (avatarFile) reader.readAsDataURL(avatarFile);
+}
+
+// Friends Management
+function addFriend() {
+  const friendName = document.getElementById('friend-name').value;
+  const friends = JSON.parse(localStorage.getItem('friends')) || [];
+  friends.push(friendName);
+  localStorage.setItem('friends', JSON.stringify(friends));
+  alert('Friend added!');
+}
