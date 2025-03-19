@@ -4,7 +4,7 @@ const resultsDiv = document.getElementById("results");
 const audioPlayer = document.getElementById("audio");
 
 // Audius API URL
-const API_URL = "https://discoveryprovider.audius.co/v1/tracks/search?query=";
+const API_URL = "https://corsproxy.io/?https://discoveryprovider.audius.co/v1/tracks/search?query=";
 
 // Search for Songs
 async function searchSongs() {
