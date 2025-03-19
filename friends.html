@@ -3,24 +3,18 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Suno - Friends</title>
-  <link rel="stylesheet" href="styles.css" />
+  <title>Your Friends - Suno</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="container">
-    <nav>
-      <a href="index.html">🎵 Home</a>
-      <a href="library.html">📚 Library</a>
-      <a href="friends.html">👥 Friends</a>
-      <a href="profile.html">🙍 Profile</a>
-    </nav>
-
-    <h1>Friends Activity</h1>
-    <div id="friends">
-      <p>Rishab is listening to <b>Shape of You</b></p>
-      <p>Ankit is jamming to <b>Blinding Lights</b></p>
-      <p>Sneha is vibing with <b>Levitating</b></p>
-    </div>
+  <div class="friends-container">
+    <h1>Your Friends</h1>
+    <input type="text" id="friend-name" placeholder="Enter friend's name" />
+    <button onclick="addFriend()">Add Friend</button>
+    <div id="friend-list"></div>
+    <a href="index.html" class="btn">Back to Home</a>
   </div>
+  
+  <script src="script.js"></script>
 </body>
 </html>
