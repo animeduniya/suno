@@ -1,51 +1,41 @@
-const searchInput = document.getElementById('search');
-const searchBtn = document.getElementById('searchBtn');
-const resultsDiv = document.getElementById('results');
-const audioPlayer = document.getElementById('audio');
-
-const audiusAPI = "https://api.audius.co";
-
-// Search music using Audius API
-async function searchMusic(query) {
-  try {
-    const response = await fetch(`${audiusAPI}/v1/tracks/search?query=${encodeURIComponent(query)}`);
-    const data = await response.json();
-    resultsDiv.innerHTML = '';
-
-    if (data.data.length === 0) {
-      resultsDiv.innerHTML = '<p>No results found!</p>';
-      return;
-    }
-
-    data.data.forEach(song => {
-      const songCard = document.createElement('div');
-      songCard.classList.add('song');
-      songCard.innerHTML = `
-        <img src="${song.artwork['480x480'] || 'default-cover.jpg'}" alt="Cover">
-        <h3>${song.title}</h3>
-        <p>By ${song.user.name}</p>
-        <button onclick="playSong('${song.stream_url}')">Play</button>
-      `;
-      resultsDiv.appendChild(songCard);
-    });
-  } catch (error) {
-    console.error('Error fetching music:', error);
-    resultsDiv.innerHTML = '<p>Failed to load music. Please try again.</p>';
-  }
+async function getAudiusNode() {
+  const response = await fetch('https://api.audius.co');
+  const data = await response.json();
+  return data.data[0];
 }
 
-// Play Music
+async function searchMusic(query) {
+  const node = await getAudiusNode();
+  if (!node) return alert('Failed to connect to Audius');
+
+  const response = await fetch(`${node}/v1/tracks/search?query=${encodeURIComponent(query)}`);
+  const data = await response.json();
+  const resultsDiv = document.getElementById('results');
+  resultsDiv.innerHTML = '';
+
+  data.data.forEach(song => {
+    const songCard = document.createElement('div');
+    songCard.classList.add('song');
+    songCard.innerHTML = `
+      <img src="${song.artwork['480x480'] || 'default-cover.jpg'}" alt="Cover">
+      <h3>${song.title}</h3>
+      <p>By ${song.user.name}</p>
+      <button onclick="playSong('${song.stream_url}')">Play</button>
+      <button onclick="addToLibrary('${song.title}')">Add to Library</button>
+    `;
+    resultsDiv.appendChild(songCard);
+  });
+}
+
 function playSong(url) {
+  const audioPlayer = document.getElementById('audio');
   audioPlayer.src = url;
   audioPlayer.play();
 }
 
-// Event Listener
-searchBtn.addEventListener('click', () => {
-  const query = searchInput.value.trim();
-  if (query) {
-    searchMusic(query);
-  } else {
-    alert('Please enter a search term!');
-  }
-});
+function addToLibrary(song) {
+  const library = JSON.parse(localStorage.getItem('library')) || [];
+  library.push(song);
+  localStorage.setItem('library', JSON.stringify(library));
+  alert(`${song} added to your library!`);
+}
