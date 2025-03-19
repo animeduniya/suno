@@ -1,70 +1,50 @@
-# Creating the main HTML file with a futuristic design
-index_html_content = """
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Suno - Music Streaming by Rishab</title>
-  <link rel="stylesheet" href="css/style.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SUNO - Music Reimagined</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <div class="container">
+    <div id="background"></div>
     <header>
-      <h1>🎵 Welcome to Suno by Rishab 🎵</h1>
-      <nav>
-        <a href="#" onclick="showPage('search')">Search</a>
-        <a href="#" onclick="showPage('profile')">Profile</a>
-        <a href="#" onclick="showPage('library')">Library</a>
-        <a href="#" onclick="showPage('friends')">Friends</a>
-      </nav>
+        <h1>SUNO</h1>
+        <p>By Rishab</p>
+        <div id="user-auth">
+          <button id="login">Login</button>
+          <button id="logout" style="display:none">Logout</button>
+        </div>
+        <div id="search-bar">
+            <input type="text" id="search-input" placeholder="Search Music...">
+            <button id="search-button">Search</button>
+        </div>
     </header>
-
-    <!-- Search Page -->
-    <section id="search" class="page active">
-      <input type="text" id="searchInput" placeholder="Search for a song..." />
-      <button onclick="searchSong()">Search</button>
-      <div id="songResults"></div>
-      <div id="player"></div>
-      <button id="playPause" onclick="togglePlayPause()">Play</button>
-    </section>
-
-    <!-- Profile Page -->
-    <section id="profile" class="page">
-      <h2>Your Profile</h2>
-      <div class="profile-card">
-        <img src="images/avatar.png" alt="Profile Avatar" id="avatar" />
-        <h3 id="username">Rishab</h3>
-        <p>Welcome back! Ready to vibe?</p>
-      </div>
-    </section>
-
-    <!-- Library Page -->
-    <section id="library" class="page">
-      <h2>Your Library</h2>
-      <ul id="libraryList">
-        <li>No songs in your library yet.</li>
-      </ul>
-    </section>
-
-    <!-- Friends Page -->
-    <section id="friends" class="page">
-      <h2>Your Friends</h2>
-      <p>Add, manage, and see what your friends are listening to!</p>
-      <div id="friendList">No friends added yet.</div>
-    </section>
-  </div>
-
-  <script src="https://www.youtube.com/iframe_api"></script>
-  <script src="js/script.js"></script>
+    <main>
+        <div id="player">
+            <audio id="audio-player" controls></audio>
+            <div id="visualizer"></div>
+            <div id="song-info">
+                <h2 id="song-title"></h2>
+                <p id="artist-name"></p>
+            </div>
+        </div>
+        <div id="playlist-container">
+            <h2>Playlists</h2>
+            <ul id="playlist">
+            </ul>
+        </div>
+        <div id="results">
+            <h2>Search Results</h2>
+            <ul id="search-results"></ul>
+        </div>
+        <div id="space-mode">
+          <h2>Space Mode</h2>
+          <canvas id="space-canvas"></canvas>
+        </div>
+    </main>
+    <script src="script.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js"></script>
 </body>
 </html>
-"""
-
-# Saving the HTML file
-html_path = '/mnt/data/Suno/index.html'
-with open(html_path, 'w') as file:
-    file.write(index_html_content)
-
-# Returning the path of the HTML file
-html_path
