@@ -3,23 +3,23 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Suno - Profile</title>
-  <link rel="stylesheet" href="styles.css" />
+  <title>Your Profile - Suno</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div class="container">
-    <nav>
-      <a href="index.html">🎵 Home</a>
-      <a href="library.html">📚 Library</a>
-      <a href="friends.html">👥 Friends</a>
-      <a href="profile.html">🙍 Profile</a>
-    </nav>
+  <div class="profile-container">
+    <h1>Your Profile</h1>
+    <label for="avatar-upload" class="avatar-label">Upload Avatar</label>
+    <input type="file" id="avatar-upload" accept="image/*" />
+    <img id="avatar-preview" src="default-avatar.png" alt="Avatar" />
+    
+    <label for="username">Username</label>
+    <input type="text" id="username" placeholder="Enter your username" />
 
-    <div class="profile">
-      <img src="avatar.png" alt="User Avatar" class="avatar" />
-      <h2 id="username">Hello, Rishab!</h2>
-      <p>Your music library is growing. Keep listening and enjoy!</p>
-    </div>
+    <button onclick="saveProfile()">Save Profile</button>
+    <a href="index.html" class="btn">Back to Home</a>
   </div>
+  
+  <script src="script.js"></script>
 </body>
 </html>
