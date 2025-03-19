@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
-
 * {
   margin: 0;
   padding: 0;
@@ -8,24 +6,34 @@
 }
 
 body {
-  background: #000;
+  background-color: #000;
   color: white;
 }
 
 .container {
+  padding: 20px;
+}
+
+nav {
+  display: flex;
+  justify-content: space-around;
+  margin-bottom: 30px;
+}
+
+nav a {
+  color: #fff;
+  text-decoration: none;
+  padding: 10px 20px;
+  border-radius: 20px;
+  background-color: #333;
+}
+
+nav a:hover {
+  background-color: #ff0077;
+}
+
+header {
   text-align: center;
-  padding: 40px;
-}
-
-header h1 {
-  font-size: 4rem;
-  background: linear-gradient(90deg, #ff00ff, #00ffff);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-header p {
-  color: #bbb;
 }
 
 input, button {
@@ -33,27 +41,19 @@ input, button {
   margin: 10px;
   border-radius: 30px;
   border: none;
-  font-size: 16px;
-}
-
-input {
-  width: 300px;
-  background-color: #222;
-  color: white;
 }
 
 button {
-  background-color: #ff00ff;
+  background-color: #ff0077;
   color: white;
   cursor: pointer;
 }
 
 button:hover {
-  background-color: #e600e6;
+  background-color: #e6006e;
 }
 
 .results {
-  margin-top: 20px;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
@@ -73,6 +73,10 @@ button:hover {
 }
 
 audio {
-  margin-top: 20px;
   width: 100%;
+}
+
+.avatar {
+  width: 120px;
+  border-radius: 50%;
 }
