@@ -1,19 +1,70 @@
+# Creating the main HTML file with a futuristic design
+index_html_content = """
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Welcome to Suno</title>
-  <link rel="stylesheet" href="style.css" />
+  <title>Suno - Music Streaming by Rishab</title>
+  <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
   <div class="container">
-    <h1>Welcome to Suno</h1>
-    <p>Experience world-class music streaming for free!</p>
-    <a href="search.html" class="btn">Start Listening</a>
-    <a href="profile.html" class="btn">Profile</a>
-    <a href="library.html" class="btn">Library</a>
-    <a href="friends.html" class="btn">Friends</a>
+    <header>
+      <h1>🎵 Welcome to Suno by Rishab 🎵</h1>
+      <nav>
+        <a href="#" onclick="showPage('search')">Search</a>
+        <a href="#" onclick="showPage('profile')">Profile</a>
+        <a href="#" onclick="showPage('library')">Library</a>
+        <a href="#" onclick="showPage('friends')">Friends</a>
+      </nav>
+    </header>
+
+    <!-- Search Page -->
+    <section id="search" class="page active">
+      <input type="text" id="searchInput" placeholder="Search for a song..." />
+      <button onclick="searchSong()">Search</button>
+      <div id="songResults"></div>
+      <div id="player"></div>
+      <button id="playPause" onclick="togglePlayPause()">Play</button>
+    </section>
+
+    <!-- Profile Page -->
+    <section id="profile" class="page">
+      <h2>Your Profile</h2>
+      <div class="profile-card">
+        <img src="images/avatar.png" alt="Profile Avatar" id="avatar" />
+        <h3 id="username">Rishab</h3>
+        <p>Welcome back! Ready to vibe?</p>
+      </div>
+    </section>
+
+    <!-- Library Page -->
+    <section id="library" class="page">
+      <h2>Your Library</h2>
+      <ul id="libraryList">
+        <li>No songs in your library yet.</li>
+      </ul>
+    </section>
+
+    <!-- Friends Page -->
+    <section id="friends" class="page">
+      <h2>Your Friends</h2>
+      <p>Add, manage, and see what your friends are listening to!</p>
+      <div id="friendList">No friends added yet.</div>
+    </section>
   </div>
+
+  <script src="https://www.youtube.com/iframe_api"></script>
+  <script src="js/script.js"></script>
 </body>
 </html>
+"""
+
+# Saving the HTML file
+html_path = '/mnt/data/Suno/index.html'
+with open(html_path, 'w') as file:
+    file.write(index_html_content)
+
+# Returning the path of the HTML file
+html_path
