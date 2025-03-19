@@ -1,87 +1,96 @@
+// Firebase configuration (replace with your own)
+const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_AUTH_DOMAIN",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_STORAGE_BUCKET",
+    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+    appId: "YOUR_APP_ID"
+};
 
-let player;
-let isPlaying = false;
+// Initialize Firebase
+const app = firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
 
-// Initialize YouTube API
-function onYouTubeIframeAPIReady() {}
+const searchInput = document.getElementById('search-input');
+const searchButton = document.getElementById('search-button');
+const searchResults = document.getElementById('search-results');
+const audioPlayer = document.getElementById('audio-player');
+const songTitle = document.getElementById('song-title');
+const artistName = document.getElementById('artist-name');
+const visualizer = document.getElementById('visualizer');
+const playlist = document.getElementById('playlist');
+const loginButton = document.getElementById('login');
+const logoutButton = document.getElementById('logout');
 
-const tag = document.createElement('script');
-tag.src = "https://www.youtube.com/iframe_api";
-document.body.appendChild(tag);
+let currentAudioContext;
+let currentAnalyser;
 
-// Page Switching
-function showPage(pageId) {
-  document.querySelectorAll('.page').forEach(page => {
-    page.classList.remove('active');
-  });
-  document.getElementById(pageId).classList.add('active');
-}
+// Example Free Music Archive API (replace with a more robust API)
+const freeMusicArchiveApiUrl = 'https://freemusicarchive.org/api/get/tracks.json?api_key=YOUR_FMA_API_KEY&limit=20&track_title=';
 
-// Search and Play Music
-function searchSong() {
-  const query = document.getElementById("searchInput").value;
-  const apiKey = 'YOUR_YOUTUBE_API_KEY'; // Replace with your actual API Key
-  const url = `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(query)}&type=video&key=${apiKey}`;
-
-  fetch(url)
-    .then(response => response.json())
-    .then(data => {
-      if (data.items.length === 0) {
-        alert("No results found.");
-        return;
-      }
-
-      const videoId = data.items[0].id.videoId;
-      const videoTitle = data.items[0].snippet.title;
-      const channelTitle = data.items[0].snippet.channelTitle;
-      const thumbnailUrl = data.items[0].snippet.thumbnails.default.url;
-
-      document.getElementById("songResults").innerHTML = `
-        <img src="${thumbnailUrl}" alt="Thumbnail" />
-        <p><strong>${videoTitle}</strong> by ${channelTitle}</p>
-      `;
-
-      if (player) {
-        player.loadVideoById(videoId);
-      } else {
-        player = new YT.Player('player', {
-          height: '0',
-          width: '0',
-          videoId: videoId,
-          playerVars: {
-            autoplay: 1,
-            controls: 0,
-            showinfo: 0,
-            modestbranding: 1,
-          },
-          events: {
-            'onReady': onPlayerReady,
-          }
+searchButton.addEventListener('click', () => {
+    const searchTerm = searchInput.value;
+    fetch(`<span class="math-inline">\{freeMusicArchiveApiUrl\}</span>{searchTerm}`)
+        .then(response => response.json())
+        .then(data => {
+            searchResults.innerHTML = '';
+            data.dataset.forEach(track => {
+                const li = document.createElement('li');
+                li.textContent = `${track.track_title} - ${track.artist_name}`;
+                li.addEventListener('click', () => playTrack(track));
+                searchResults.appendChild(li);
+            });
         });
-      }
-    })
-    .catch(error => {
-      console.error("Error fetching music:", error);
-      alert("Failed to load music. Please try again.");
-    });
+});
+
+function playTrack(track) {
+    audioPlayer.src = track.track_file;
+    songTitle.textContent = track.track_title;
+    artistName.textContent = track.artist_name;
+    audioPlayer.play();
+    visualizeAudio();
 }
 
-// Player Controls
-function onPlayerReady(event) {
-  event.target.playVideo();
-  isPlaying = true;
-  document.getElementById("playPause").innerText = "Pause";
+function visualizeAudio() {
+    if (currentAudioContext) {
+        currentAudioContext.close();
+    }
+    currentAudioContext = new AudioContext();
+    const source = currentAudioContext.createMediaElementSource(audioPlayer);
+    currentAnalyser = currentAudioContext.createAnalyser();
+    source.connect(currentAnalyser);
+    currentAnalyser.connect(currentAudioContext.destination);
+
+    const bufferLength = currentAnalyser.frequencyBinCount;
+    const dataArray = new Uint8Array(bufferLength);
+
+    function draw() {
+        requestAnimationFrame(draw);
+        currentAnalyser.getByteFrequencyData(dataArray);
+
+        // Visualize dataArray (e.g., draw bars in the visualizer div)
+        // Example:
+        visualizer.innerHTML = '';
+        for (let i = 0; i < bufferLength; i++) {
+            const bar = document.createElement('div');
+            bar.style.width = '2px';
+            bar.style.height = `${dataArray[i]}px`;
+            bar.style.backgroundColor = `rgb(${dataArray[i]}, ${100}, ${200})`;
+            visualizer.appendChild(bar);
+        }
+    }
+
+    draw();
 }
 
-function togglePlayPause() {
-  if (!player) return;
-
-  if (isPlaying) {
-    player.pauseVideo();
-    document.getElementById("playPause").innerText = "Play";
-  } else {
-    player.playVideo();
-    document.getElementById("playPause").innerText = "Pause";
-  }
-  isPlaying = !isPlaying;
-}
+//firebase authentication.
+auth.onAuthStateChanged((user) => {
+    if (user) {
+        loginButton.style.display = 'none';
+        logoutButton.style.display = 'block';
+    } else {
+        loginButton.style.display = 'block';
+        logoutButton.style.display = 'none';
+    }
+});
